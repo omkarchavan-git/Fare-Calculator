@@ -15,6 +15,17 @@ public class FareformServiceImpl implements FareformService {
     @Override
     public Fareform saveData(Fareform fareform) {
         Fareform addData = cabfareRepo.save(fareform);
-        return addData;
+        Long totalFare = 40 + (addData.getTotalKm() * 3);
+        Long sharedFare = totalFare% addData.getTotalPassenger();
+
+        //to save and save all data at once
+        Fareform response = new Fareform();
+
+        response.setId(addData.getId());
+        response.setTotalFare(addData.getTotalFare());
+        response.setSharedFare(addData.getSharedFare());
+        response.setSharedFare(sharedFare);
+        response.setTotalFare(totalFare);
+        return response;
     }
 }
