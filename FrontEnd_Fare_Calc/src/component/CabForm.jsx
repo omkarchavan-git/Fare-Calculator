@@ -8,7 +8,6 @@ export default function CabForm({ distance }) {
     <div className="cab-form-container">
 
       <div className="cab-form">
-    
         <label htmlFor="cab_type"> Select Cab Type : </label>
 
         <select name="cab" id="">
