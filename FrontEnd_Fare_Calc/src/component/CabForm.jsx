@@ -14,7 +14,7 @@ function FareCalculator() {
     };
 
     try {
-      const response = await fetch("http://localhost:8080/calcFare", {
+      const response = await fetch("http://localhost:8081/formfare/addData", {
         method: "POST",
         headers: {
           "Content-Type": "application/json"
