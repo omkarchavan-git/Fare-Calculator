@@ -1,11 +1,13 @@
 import React, { useState } from "react";
 
-export default function CabForm({ distance }) {
+export default function CabForm() {
   const [form, setForm] = useState({
     cabType: "",
     totalKm: "",
     totalPassenger: ""
   });
+
+  const [result, setResult] = useState(null);
 
   const handleChange = (e) => {
     setForm({
@@ -15,6 +17,11 @@ export default function CabForm({ distance }) {
   };
 
   const handleSubmit = async () => {
+    if (!form.cabType || !form.totalKm || !form.totalPassenger) {
+      alert("Please fill all fields");
+      return;
+    }
+
     const response = await fetch("http://localhost:8081/formfare/addData", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -22,15 +29,14 @@ export default function CabForm({ distance }) {
     });
 
     const data = await response.json();
-    console.log("Saved:", data);
-    alert("Data saved successfully!");
+    setResult(data); // store backend calculated result
   };
 
   return (
     <div className="cab-form-container">
       <div className="cab-form">
 
-        <label htmlFor="cabType"> Select Cab Type : </label>
+        <label>Select Cab Type:</label>
         <select name="cabType" onChange={handleChange}>
           <option value="">--select--</option>
           <option value="Auto">Auto (10rs/km)</option>
@@ -40,7 +46,7 @@ export default function CabForm({ distance }) {
         </select>
 
         <p>
-          Total Distance:
+          Total Distance (KM):
           <input
             type="number"
             name="totalKm"
@@ -59,9 +65,21 @@ export default function CabForm({ distance }) {
           />
         </p>
 
-        <button type="button" className="calculatebtn" onClick={handleSubmit}>
-          Submit
+        <button type="button" onClick={handleSubmit}>
+          Calculate Fare
         </button>
+
+        {/* ------- SHOW RESULT BELOW -------- */}
+        {result && (
+          <div className="result-box">
+            <h3>Fare Calculation Result</h3>
+            <p><strong>Total Fare:</strong> ₹{result.totalFare}</p>
+            <p><strong>Shared Fare:</strong> ₹{result.sharedFare}</p>
+            <p><strong>Total KM:</strong> {result.totalKm}</p>
+            <p><strong>Total Passengers:</strong> {result.totalPassenger}</p>
+          </div>
+        )}
+
       </div>
     </div>
   );
