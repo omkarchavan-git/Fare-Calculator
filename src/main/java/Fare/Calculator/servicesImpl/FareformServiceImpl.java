@@ -14,18 +14,47 @@ public class FareformServiceImpl implements FareformService {
 
     @Override
     public Fareform saveData(Fareform fareform) {
-        Fareform addData = cabfareRepo.save(fareform);
-        Long totalFare = 40 + (addData.getTotalKm() * 3);
-        Long sharedFare = totalFare / addData.getTotalPassenger();
 
-        //to save and save all data at once
+        // Save input data first
+        Fareform addData = cabfareRepo.save(fareform);
+
+        Long km = addData.getTotalKm();
+        Long passengers = addData.getTotalPassenger();
+        String cabType = addData.getCabType();
+
+        // Step 1: Determine rate based on cab type
+        Long ratePerKm = 0L;
+
+        switch (cabType) {
+            case "Mini":
+                ratePerKm = 13L;
+                break;
+            case "Sedan":
+                ratePerKm = 15L;
+                break;
+            case "SUV":
+                ratePerKm = 18L;
+                break;
+            default:
+                ratePerKm = 10L; // default
+        }
+
+        // Step 2: Calculate fare
+        Long baseFare = 40L;  // fixed charge
+        Long totalFare = baseFare + (km * ratePerKm);
+        Long sharedFare = totalFare / passengers;
+
+        // Step 3: Create response object
         Fareform response = new Fareform();
 
         response.setId(addData.getId());
-        response.setTotalFare(addData.getTotalFare());
-        response.setSharedFare(addData.getSharedFare());
-        response.setSharedFare(sharedFare);
+        response.setCabType(cabType);
+        response.setTotalKm(km);
+        response.setTotalPassenger(passengers);
         response.setTotalFare(totalFare);
+        response.setSharedFare(sharedFare);
+
         return response;
     }
+
 }
