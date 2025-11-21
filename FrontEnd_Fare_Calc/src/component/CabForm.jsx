@@ -1,86 +1,76 @@
 import React, { useState } from "react";
 
-export default function CabForm() {
-  const [form, setForm] = useState({
-    cabType: "",
-    totalKm: "",
-    totalPassenger: ""
-  });
-
+function FareCalculator() {
+  const [distance, setDistance] = useState("");
+  const [passengers, setPassengers] = useState("");
+  const [cabType, setCabType] = useState("Mini");
   const [result, setResult] = useState(null);
 
-  const handleChange = (e) => {
-    setForm({
-      ...form,
-      [e.target.name]: e.target.value,
-    });
-  };
+  const calculateFare = async () => {
+    const requestBody = {
+      totalKm: distance,
+      totalPassenger: passengers,
+      cabType: cabType
+    };
 
-  const handleSubmit = async () => {
-    if (!form.cabType || !form.totalKm || !form.totalPassenger) {
-      alert("Please fill all fields");
-      return;
+    try {
+      const response = await fetch("http://localhost:8080/calcFare", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify(requestBody)
+      });
+
+      const data = await response.json();
+      setResult(data);   // ⬅️ This updates UI
+    } catch (error) {
+      console.error("Error:", error);
     }
-
-    const response = await fetch("http://localhost:8081/formfare/addData", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(form),
-    });
-
-    const data = await response.json();
-    setResult(data); // store backend calculated result
   };
 
   return (
-    <div className="cab-form-container">
-      <div className="cab-form">
+    <div>
+      <label>Select Cab Type:</label>
+      <select value={cabType} onChange={(e) => setCabType(e.target.value)}>
+        <option value="Mini">Car Mini (13rs/km)</option>
+        <option value="Sedan">Sedan (15rs/km)</option>
+        <option value="SUV">SUV (18rs/km)</option>
+      </select>
 
-        <label>Select Cab Type:</label>
-        <select name="cabType" onChange={handleChange}>
-          <option value="">--select--</option>
-          <option value="Auto">Auto (10rs/km)</option>
-          <option value="Car Mini">Car Mini (13rs/km)</option>
-          <option value="Car Sedan">Car Sedan (17rs/km)</option>
-          <option value="Car XL">Car XL (20rs/km)</option>
-        </select>
+      <br />
 
-        <p>
-          Total Distance (KM):
-          <input
-            type="number"
-            name="totalKm"
-            value={form.totalKm}
-            onChange={handleChange}
-          />
-        </p>
+      <label>Total Distance (KM):</label>
+      <input
+        type="number"
+        value={distance}
+        onChange={(e) => setDistance(e.target.value)}
+      />
 
-        <p>
-          Total Passengers:
-          <input
-            type="number"
-            name="totalPassenger"
-            value={form.totalPassenger}
-            onChange={handleChange}
-          />
-        </p>
+      <br />
 
-        <button type="button" onClick={handleSubmit}>
-          Calculate Fare
-        </button>
+      <label>Total Passengers:</label>
+      <input
+        type="number"
+        value={passengers}
+        onChange={(e) => setPassengers(e.target.value)}
+      />
 
-        {/* ------- SHOW RESULT BELOW -------- */}
-        {result && (
-          <div className="result-box">
-            <h3>Fare Calculation Result</h3>
-            <p><strong>Total Fare:</strong> ₹{result.totalFare}</p>
-            <p><strong>Shared Fare:</strong> ₹{result.sharedFare}</p>
-            <p><strong>Total KM:</strong> {result.totalKm}</p>
-            <p><strong>Total Passengers:</strong> {result.totalPassenger}</p>
-          </div>
-        )}
+      <br />
 
-      </div>
+      <button onClick={calculateFare}>Calculate Fare</button>
+
+      {result && (
+        <div>
+          <h3>Fare Calculation Result</h3>
+          <p><b>Total Fare: ₹{result.totalFare}</b></p>
+          <p><b>Shared Fare: ₹{result.sharedFare}</b></p>
+          <p><b>Total KM: {result.totalKm}</b></p>
+          <p><b>Total Passengers: {result.totalPassenger}</b></p>
+        </div>
+      )}
     </div>
   );
 }
+
+export default FareCalculator;
