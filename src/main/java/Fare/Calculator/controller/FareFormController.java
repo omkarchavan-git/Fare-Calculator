@@ -21,11 +21,7 @@ public class FareFormController {
     @PostMapping("/addData")
     public ResponseEntity<?> addData(@RequestBody Fareform fareform)
     {
-        if (fareform != null) {
             Fareform addData = fareformService.saveData(fareform);
             return new ResponseEntity<>(addData, HttpStatus.OK);
-        }
-    else
-        return new ResponseEntity<>("data is null" , HttpStatus.NOT_FOUND);
     }
 }
