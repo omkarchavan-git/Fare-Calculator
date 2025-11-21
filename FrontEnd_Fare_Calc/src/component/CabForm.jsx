@@ -15,7 +15,7 @@ export default function CabForm({ distance }) {
   };
 
   const handleSubmit = async () => {
-    const response = await fetch("http://localhost:8080/formfare/addData", {
+    const response = await fetch("http://localhost:8081/formfare/addData", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(form),
